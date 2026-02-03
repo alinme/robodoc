@@ -1,13 +1,13 @@
 {
-  "name": "robo-doc",
-  "version": "1.0.0",
+  "name": "robodoc",
+  "version": "1.2.1",
   "description": "RoboDoc - WhatsApp Bulk Sender for World Vision Romania",
   "private": true,
   "type": "module",
   "scripts": {
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm run install",
-    "install:backend": "cd backend && npm install",
-    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install && cd backend && npm run install && cd ../frontend && npm run install",
+    "install:backend": "cd backend && npm run install",
+    "install:frontend": "cd frontend && npm run install",
     "start": "npm run start:backend",
     "start:backend": "cd backend && npm start",
     "start:frontend": "cd frontend && npm run dev",
