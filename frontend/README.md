@@ -50,3 +50,12 @@ The frontend is configured to proxy API requests to the backend server running o
 
 The app is configured as a Progressive Web App (PWA) and can be installed on devices.
 
+## Deploy on Vercel
+
+1. Import the repo in [Vercel](https://vercel.com) and connect your Git provider.
+2. Set **Root Directory** to `frontend` (this repo is a monorepo; only the frontend is deployed).
+3. Vercel will use the existing `vercel.json` (build: `pnpm run build`, output: `dist`, SPA rewrites).
+4. Deploy. The frontend will be served as a static site.
+
+**Note:** The backend (WhatsApp Web.js, Node server) cannot run on Vercel’s serverless model. Host it elsewhere (e.g. Railway, Render, or a VPS) and point the frontend to that API (e.g. via proxy or `VITE_API_URL` if you add env-based API base URL support).
+
