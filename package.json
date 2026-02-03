@@ -11,7 +11,7 @@
     "start": "npm run start:backend",
     "start:backend": "cd backend && npm start",
     "start:frontend": "cd frontend && npm run dev",
-    "dev": "npm run dev:all",
+    "dev": "npm run dev:all -- --host",
     "dev:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
