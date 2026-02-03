@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang='en'>
+
+<head>
+  <meta charset='utf-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+  <title>Contacts — WhatsApp Quick Sender</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #f4f4f4;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 6px 10px;
+      cursor: pointer;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #fff;
+    }
+
+    .btn-send {
+      border-color: #25D366;
+      color: #25D366;
+      font-weight: 600;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-feedback {
+      background: #25D366;
+      color: white;
+      border-color: #25D366;
+    }
+
+    .btn-sent {
+      background: #25D366;
+      color: white;
+      border-color: #25D366;
+      opacity: 0.7;
+    }
+
+    .btn-sent:hover {
+      opacity: 0.9;
+    }
+
+    .controls {
+      margin-bottom: 12px;
+    }
+
+    .search {
+      padding: 6px;
+      width: 260px;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Contacts — WhatsApp Quick Sender</h2>
+  <div class='controls'>
+    <label for='template'>Message template (use {Name} or {GivenName}):</label><br />
+    <textarea id='template' style='width:60%; padding:8px; margin-top:6px;' rows="5">Hello {GivenName}, this is a message from me. Please reply when you can.</textarea>
+    
+    &nbsp;<button class='btn' onclick='setDefault(this)'>Reset</button>
+    &nbsp;<button class='btn' onclick='saveSentState(this)' style='background:#4CAF50; color:white; border-color:#4CAF50;'>Save</button>
+    <br /><small>Example: "Buna {GivenName}, te contactez din partea..." — the placeholder will be replaced per
+      contact.</small>
+    <div style='margin-top:8px;'>
+      <input id='search' class='search' placeholder='Search name, phone or group...' oninput='filterTable()' />
+      <button class='btn' onclick='filterTable(this)'>Filter</button>
+      <button class='btn' onclick='clearFilter(this)'>Clear</button>
+    </div>
+  </div>
+  <table id='contacts'>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Group</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-name='diana luminita grecu' data-phone='40766479968' data-group='alba'>
+        <td>1</td>
+        <td>Diana Luminita Grecu</td>
+        <td>40766479968</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40766479968','Diana Luminita Grecu','Diana')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='cosmina suteu' data-phone='40787579932' data-group='alba'>
+        <td>2</td>
+        <td>Cosmina Suteu</td>
+        <td>40787579932</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40787579932','Cosmina Suteu','Cosmina')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='popa maria' data-phone='40757913422' data-group='alba'>
+        <td>3</td>
+        <td>Popa Maria</td>
+        <td>40757913422</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40757913422','Popa Maria','Popa')">Send message</button>
+        </td>
+      </tr>
+      <tr data-name='cristian emilia' data-phone='40765309898' data-group='alba'>
+        <td>4</td>
+        <td>Cristian Emilia</td>
+        <td>40765309898</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40765309898','Cristian Emilia','Cristian')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='alexandra-iulia barbat' data-phone='40742738467' data-group='alba'>
+        <td>5</td>
+        <td>Alexandra-Iulia Barbat</td>
+        <td>40742738467</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send'
+            onclick="sendMessage('40742738467','Alexandra-Iulia Barbat','Alexandra-Iulia')">Send message</button></td>
+      </tr>
+      <tr data-name='sturza petronela' data-phone='40758382950' data-group='alba'>
+        <td>6</td>
+        <td>Sturza Petronela</td>
+        <td>40758382950</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40758382950','Sturza Petronela','Sturza')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='molnar andreea-susana' data-phone='40746983224' data-group='alba'>
+        <td>7</td>
+        <td>Molnar Andreea-Susana</td>
+        <td>40746983224</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40746983224','Molnar Andreea-Susana','Molnar')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='leahu codruta' data-phone='40763795019' data-group='alba'>
+        <td>8</td>
+        <td>Leahu Codruta</td>
+        <td>40763795019</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40763795019','Leahu Codruta','Leahu')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='datcu anisoara' data-phone='40727007416' data-group='alba'>
+        <td>9</td>
+        <td>Datcu Anisoara</td>
+        <td>40727007416</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40727007416','Datcu Anisoara','Datcu')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='simona-alexandra anca' data-phone='40751784267' data-group='alba'>
+        <td>10</td>
+        <td>Simona-Alexandra Anca</td>
+        <td>40751784267</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send'
+            onclick="sendMessage('40751784267','Simona-Alexandra Anca','Simona-Alexandra')">Send message</button></td>
+      </tr>
+      <tr data-name='oltean lidia corina' data-phone='40745615367' data-group='alba'>
+        <td>11</td>
+        <td>Oltean Lidia Corina</td>
+        <td>40745615367</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40745615367','Oltean Lidia Corina','Oltean')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='pintea marius' data-phone='40753037893' data-group='alba'>
+        <td>12</td>
+        <td>Pintea Marius</td>
+        <td>40753037893</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40753037893','Pintea Marius','Pintea')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='toader lucica' data-phone='40755342767' data-group='alba'>
+        <td>13</td>
+        <td>Toader Lucica</td>
+        <td>40755342767</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40755342767','Toader Lucica','Toader')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='cristina muntean' data-phone='40744478521' data-group='alba'>
+        <td>14</td>
+        <td>Cristina Muntean</td>
+        <td>40744478521</td>
+        <td>Alba</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40744478521','Cristina Muntean','Cristina')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='dorina riscuta' data-phone='40724001828' data-group='hunedoara'>
+        <td>15</td>
+        <td>Dorina Riscuta</td>
+        <td>40724001828</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40724001828','Dorina Riscuta','Dorina')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='alina dezso' data-phone='40745202147' data-group='hunedoara'>
+        <td>16</td>
+        <td>Alina Dezso</td>
+        <td>40745202147</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40745202147','Alina Dezso','Alina')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='mihaela stoicuta' data-phone='40721635443' data-group='hunedoara'>
+        <td>17</td>
+        <td>Mihaela Stoicuta</td>
+        <td>40721635443</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40721635443','Mihaela Stoicuta','Mihaela')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='loredana gabriela radu' data-phone='40762678377' data-group='hunedoara'>
+        <td>18</td>
+        <td>Loredana Gabriela Radu</td>
+        <td>40762678377</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40762678377','Loredana Gabriela Radu','Loredana')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='tod denisa' data-phone='40721754648' data-group='hunedoara'>
+        <td>19</td>
+        <td>Tod Denisa</td>
+        <td>40721754648</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40721754648','Tod Denisa','Tod')">Send message</button>
+        </td>
+      </tr>
+      <tr data-name='adriana faur' data-phone='40727600478' data-group='hunedoara'>
+        <td>20</td>
+        <td>Adriana Faur</td>
+        <td>40727600478</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40727600478','Adriana Faur','Adriana')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='stanciu bianca' data-phone='40730481177' data-group='hunedoara'>
+        <td>21</td>
+        <td>Stanciu Bianca</td>
+        <td>40730481177</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40730481177','Stanciu Bianca','Stanciu')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='dana demian-c' data-phone='40723064039' data-group='hunedoara'>
+        <td>22</td>
+        <td>Dana Demian-C</td>
+        <td>40723064039</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40723064039','Dana Demian-C','Dana')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='loredana boldor' data-phone='40728242045' data-group='hunedoara'>
+        <td>23</td>
+        <td>Loredana Boldor</td>
+        <td>40728242045</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40728242045','Loredana Boldor','Loredana')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='corne claudia' data-phone='40727743611' data-group='hunedoara'>
+        <td>24</td>
+        <td>Corne Claudia</td>
+        <td>40727743611</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40727743611','Corne Claudia','Corne')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='trif ramona daniela' data-phone='40740075274' data-group='hunedoara'>
+        <td>25</td>
+        <td>Trif Ramona Daniela</td>
+        <td>40740075274</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40740075274','Trif Ramona Daniela','Trif')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='spanior andreea' data-phone='40722257609' data-group='hunedoara'>
+        <td>26</td>
+        <td>Spanior Andreea</td>
+        <td>40722257609</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40722257609','Spanior Andreea','Spanior')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='cocolos fabiola' data-phone='40766699415' data-group='hunedoara'>
+        <td>27</td>
+        <td>Cocolos Fabiola</td>
+        <td>40766699415</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40766699415','Cocolos Fabiola','Cocolos')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='maria anca stanca' data-phone='40723973146' data-group='hunedoara'>
+        <td>28</td>
+        <td>Maria Anca Stanca</td>
+        <td>40723973146</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40723973146','Maria Anca Stanca','Maria')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='alexandra muresan' data-phone='40786994917' data-group='hunedoara'>
+        <td>29</td>
+        <td>Alexandra Muresan</td>
+        <td>40786994917</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40786994917','Alexandra Muresan','Alexandra')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='adriana stanga' data-phone='40727317339' data-group='hunedoara'>
+        <td>30</td>
+        <td>Adriana Stanga</td>
+        <td>40727317339</td>
+        <td>Hunedoara</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40727317339','Adriana Stanga','Adriana')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='brasov contact' data-phone='40723428542' data-group='brasov'>
+        <td>31</td>
+        <td>Brasov Contact</td>
+        <td>40723428542</td>
+        <td>Brasov</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40723428542','Brasov Contact','Brasov')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='glisovic radoslava-ed' data-phone='40722879980' data-group='timis'>
+        <td>32</td>
+        <td>Glisovic Radoslava-Ed</td>
+        <td>40722879980</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40722879980','Glisovic Radoslava-Ed','Glisovic')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='ana otescu' data-phone='40731910227' data-group='timis'>
+        <td>33</td>
+        <td>Ana Otescu</td>
+        <td>40731910227</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40731910227','Ana Otescu','Ana')">Send message</button>
+        </td>
+      </tr>
+      <tr data-name='lidia veciunca' data-phone='40744891780' data-group='timis'>
+        <td>34</td>
+        <td>Lidia Veciunca</td>
+        <td>40744891780</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40744891780','Lidia Veciunca','Lidia')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='larisa-pamela semelbauer' data-phone='40787750420' data-group='timis'>
+        <td>35</td>
+        <td>Larisa-Pamela Semelbauer</td>
+        <td>40787750420</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send'
+            onclick="sendMessage('40787750420','Larisa-Pamela Semelbauer','Larisa-Pamela')">Send message</button></td>
+      </tr>
+      <tr data-name='jivulescu sorin' data-phone='40748797079' data-group='timis'>
+        <td>36</td>
+        <td>Jivulescu Sorin</td>
+        <td>40748797079</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40748797079','Jivulescu Sorin','Jivulescu')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='liana ioana coroiu' data-phone='40740623210' data-group='timis'>
+        <td>37</td>
+        <td>Liana Ioana Coroiu</td>
+        <td>40740623210</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40740623210','Liana Ioana Coroiu','Liana')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='florin giurgiu' data-phone='40787821376' data-group='timis'>
+        <td>38</td>
+        <td>Florin Giurgiu</td>
+        <td>40787821376</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40787821376','Florin Giurgiu','Florin')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='dragos timofticiuc' data-phone='40761756206' data-group='timis'>
+        <td>39</td>
+        <td>Dragos Timofticiuc</td>
+        <td>40761756206</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40761756206','Dragos Timofticiuc','Dragos')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='adelina cosminita petrescu' data-phone='40722254106' data-group='timis'>
+        <td>40</td>
+        <td>Adelina Cosminita Petrescu</td>
+        <td>40722254106</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send'
+            onclick="sendMessage('40722254106','Adelina Cosminita Petrescu','Adelina')">Send message</button></td>
+      </tr>
+      <tr data-name='stoica costina' data-phone='40766925209' data-group='timis'>
+        <td>41</td>
+        <td>Stoica Costina</td>
+        <td>40766925209</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40766925209','Stoica Costina','Stoica')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='gabriela-monica sirbu' data-phone='40723398818' data-group='timis'>
+        <td>42</td>
+        <td>Gabriela-Monica Sirbu</td>
+        <td>40723398818</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send'
+            onclick="sendMessage('40723398818','Gabriela-Monica Sirbu','Gabriela-Monica')">Send message</button></td>
+      </tr>
+      <tr data-name='daniela pesecan' data-phone='40765713555' data-group='timis'>
+        <td>43</td>
+        <td>Daniela Pesecan</td>
+        <td>40765713555</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40765713555','Daniela Pesecan','Daniela')">Send
+            message</button></td>
+      </tr>
+      <tr data-name='ileana miculescu' data-phone='40740020132' data-group='timis'>
+        <td>44</td>
+        <td>Ileana Miculescu</td>
+        <td>40740020132</td>
+        <td>Timis</td>
+        <td><button class='btn btn-send' onclick="sendMessage(this, '40740020132','Ileana Miculescu','Ileana')">Send
+            message</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <script>
+    function sendMessage(a, b, c, d) {
+      // supports both sendMessage(number, fullname, given)
+      // and sendMessage(buttonElement, number, fullname, given)
+      let btn, number, fullname, given;
+      if (a && typeof a === 'object' && a.tagName === 'BUTTON') {
+        btn = a; number = b; fullname = c; given = d;
+      } else {
+        number = a; fullname = b; given = c;
+      }
+
+      let template = document.getElementById('template').value || '';
+      let msg = template.replace(/{Name}/g, fullname || '').replace(/{GivenName}/g, given || '');
+
+      // open wa.me in a new tab; if a button was passed, give simple feedback
+      let encoded = encodeURIComponent(msg);
+      let url = 'https://wa.me/' + number + '?text=' + encoded;
+
+      // Global reference to WhatsApp window - reuse same window
+      let whatsappWindow = null;
+
+      // Function to open URL - reuses same window to minimize focus switching
+      // Note: Browsers have security restrictions that prevent keeping focus
+      // This reuses the same window/tab so it doesn't keep opening new ones
+      function openWithoutFocus(url) {
+        // Reuse the same window if it exists and is still open
+        if (whatsappWindow && !whatsappWindow.closed) {
+          // Update the existing window
+          whatsappWindow.location.href = url;
+          // Try to refocus current window (may not work due to browser security)
+          setTimeout(() => {
+            window.focus();
+          }, 100);
+        } else {
+          // Open new window with a specific name so we can reuse it
+          whatsappWindow = window.open(url, 'whatsapp_sender', 'noopener,noreferrer');
+          
+          // Try to refocus current window (may not work due to browser security)
+          if (whatsappWindow) {
+            setTimeout(() => {
+              window.focus();
+              try {
+                whatsappWindow.blur();
+              } catch(e) {
+                // Cross-origin restrictions may prevent this
+              }
+            }, 100);
+            
+            // Also try multiple refocus attempts
+            setTimeout(() => window.focus(), 200);
+            setTimeout(() => window.focus(), 500);
+          }
+        }
+      }
+
+      if (btn) {
+        // If already sent, don't do anything (or allow re-sending)
+        if (btn.classList.contains('btn-sent')) {
+          // Optionally allow re-sending by removing the sent state
+          // For now, just open the link again
+          openWithoutFocus(url);
+          return;
+        }
+
+        const originalText = btn.textContent;
+        btn.textContent = 'Opening...';
+        btn.disabled = true;
+        btn.classList.add('btn-feedback');
+        openWithoutFocus(url);
+        // Set button to permanent "Sent" state after a short delay
+        setTimeout(() => {
+          btn.textContent = '✓ Sent';
+          btn.classList.remove('btn-feedback');
+          btn.classList.add('btn-sent');
+          btn.disabled = false;
+          // Save to localStorage
+          saveSentToStorage(number);
+        }, 800);
+      } else {
+        openWithoutFocus(url);
+      }
+    }
+
+    function filterTable(btn) {
+      if (btn) {
+        const originalText = btn.textContent;
+        btn.textContent = 'Filtering...';
+        btn.disabled = true;
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }, 300);
+      }
+      
+      let q = document.getElementById('search').value.trim().toLowerCase();
+      let rows = document.querySelectorAll('#contacts tbody tr');
+      rows.forEach(r => {
+        let name = (r.dataset.name || '').toLowerCase();
+        let phone = (r.dataset.phone || '').toLowerCase();
+        let group = (r.dataset.group || '').toLowerCase();
+        if (!q || name.includes(q) || phone.includes(q) || group.includes(q)) {
+          r.style.display = '';
+        } else {
+          r.style.display = 'none';
+        }
+      });
+    }
+
+    function clearFilter(btn) {
+      if (btn) {
+        const originalText = btn.textContent;
+        btn.textContent = 'Clearing...';
+        btn.disabled = true;
+        setTimeout(() => {
+          btn.textContent = '✓ Cleared';
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }, 600);
+        }, 200);
+      }
+      document.getElementById('search').value = '';
+      filterTable();
+    }
+
+    function setDefault(btn) {
+      if (btn) {
+        const originalText = btn.textContent;
+        btn.textContent = 'Resetting...';
+        btn.disabled = true;
+        setTimeout(() => {
+          btn.textContent = '✓ Reset';
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }, 600);
+        }, 200);
+      }
+      document.getElementById('template').value = 'Hello {GivenName}, this is a message from me. Please reply when you can.';
+    }
+
+    // LocalStorage functions for sent state
+    function saveSentToStorage(phoneNumber) {
+      try {
+        let sentNumbers = JSON.parse(localStorage.getItem('whatsappSentNumbers') || '[]');
+        if (!sentNumbers.includes(phoneNumber)) {
+          sentNumbers.push(phoneNumber);
+          localStorage.setItem('whatsappSentNumbers', JSON.stringify(sentNumbers));
+        }
+      } catch (e) {
+        console.error('Error saving to localStorage:', e);
+      }
+    }
+
+    function getSentFromStorage() {
+      try {
+        return JSON.parse(localStorage.getItem('whatsappSentNumbers') || '[]');
+      } catch (e) {
+        console.error('Error reading from localStorage:', e);
+        return [];
+      }
+    }
+
+    function restoreSentState() {
+      const sentNumbers = getSentFromStorage();
+      const buttons = document.querySelectorAll('.btn-send');
+      buttons.forEach(btn => {
+        // Extract phone number from onclick attribute
+        const onclickAttr = btn.getAttribute('onclick');
+        if (onclickAttr) {
+          const match = onclickAttr.match(/sendMessage\(this,\s*'([^']+)'/);
+          if (match && match[1]) {
+            const phoneNumber = match[1];
+            if (sentNumbers.includes(phoneNumber)) {
+              btn.textContent = '✓ Sent';
+              btn.classList.add('btn-sent');
+            }
+          }
+        }
+      });
+    }
+
+    function saveSentState(btn) {
+      if (btn) {
+        const originalText = btn.textContent;
+        btn.textContent = 'Saving...';
+        btn.disabled = true;
+        setTimeout(() => {
+          try {
+            // Save message template
+            const template = document.getElementById('template').value || '';
+            localStorage.setItem('whatsappTemplate', template);
+            
+            // Get all currently sent buttons and save their phone numbers
+            const sentButtons = document.querySelectorAll('.btn-send.btn-sent');
+            let sentNumbers = [];
+            sentButtons.forEach(sentBtn => {
+              const onclickAttr = sentBtn.getAttribute('onclick');
+              if (onclickAttr) {
+                const match = onclickAttr.match(/sendMessage\(this,\s*'([^']+)'/);
+                if (match && match[1]) {
+                  sentNumbers.push(match[1]);
+                }
+              }
+            });
+            localStorage.setItem('whatsappSentNumbers', JSON.stringify(sentNumbers));
+            
+            btn.textContent = '✓ Saved';
+            setTimeout(() => {
+              btn.textContent = originalText;
+              btn.disabled = false;
+            }, 1000);
+          } catch (e) {
+            btn.textContent = 'Error';
+            setTimeout(() => {
+              btn.textContent = originalText;
+              btn.disabled = false;
+            }, 1500);
+          }
+        }, 200);
+      }
+    }
+
+    function restoreTemplate() {
+      try {
+        const savedTemplate = localStorage.getItem('whatsappTemplate');
+        if (savedTemplate) {
+          document.getElementById('template').value = savedTemplate;
+        }
+      } catch (e) {
+        console.error('Error restoring template:', e);
+      }
+    }
+
+    // Restore sent state and template on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      restoreTemplate();
+      restoreSentState();
+    });
+  </script>
+</body>
+
+</html>
